@@ -38,5 +38,5 @@ upload_result Dispatcher::operator()() {
     }
 }
 
-Dispatcher::Dispatcher(TQueue<chunk> *dq, int utc, engine_func ef)
+Dispatcher::Dispatcher(TQueue<packed_storage> *dq, int utc, engine_func ef)
         : data_queue(dq), upload_thread_count(utc), upload_queue{}, network_uploader(std::move(ef)) {}

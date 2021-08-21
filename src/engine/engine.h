@@ -7,28 +7,14 @@
 
 using namespace nbtp;
 
-struct block { // block is dynamic. But chunk is static.
-    size_t current_size;
-    size_t max_size;
-    unique_ptr<char> p;
 
-    explicit block(size_t init_size);
-
-    void write_in(char *d, size_t prepared_size);
-
-    ~block();
-
-    block(const block &) = delete;
-
-    block(block &&) noexcept = default;
-};
 
 class MaxTryExceedException : exception {};
 
 struct information_pass_to_curl_handle {
-    block download_data;
+    dynamic_storage download_data;
     promise<upload_result> promise_to_report_upload_result{};
-    chunk data_need_to_be_sent;
+    packed_storage data_need_to_be_sent;
     short fail_times = 0;
 };
 
@@ -43,12 +29,12 @@ public:
 
     static size_t rough_size;
 
-    future<upload_result> add_task(chunk &&input);
+    future<upload_result> add_task(packed_storage &&input);
 
     void start_engine();
 
 private:
-    virtual upload_result result_converter(block raw_result) = 0; // convert the server response to a result
+    virtual upload_result result_converter(dynamic_storage raw_result) = 0; // convert the server response to a result
 
-    virtual void define_curl(CURL *in_curl, chunk *input) = 0; // set url and data for input CURL. Dont care about input object.
+    virtual void define_curl(CURL *in_curl, packed_storage *input) = 0; // set url and data for input CURL. Dont care about input object.
 };

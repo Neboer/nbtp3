@@ -4,34 +4,19 @@
 
 using namespace nbtp;
 
-block::block(size_t init_size)
-        : p((char *) malloc(init_size)), max_size(init_size), current_size(0) {}
-
-void block::write_in(char *d, size_t prepared_size) {
-    size_t require_new_size = current_size + prepared_size;
-    if (max_size < require_new_size) {
-        p.reset((char *) realloc(p.get(), require_new_size));
-    }
-    memcpy(p.get() + current_size, d, prepared_size);
-}
-
-block::~block() { p = nullptr; }
-
-
-static size_t curl_write_cb(char *data, size_t count, size_t nmemb,
-                            void *user_data) {
-    auto *user_block = (block *) user_data;
+static size_t curl_write_cb(char *data, size_t count, size_t nmemb, void *user_data) {
+    auto *user_block = (dynamic_storage *) user_data;
     user_block->write_in(data, nmemb);
     return nmemb;
 }
 
-future<upload_result> Engine::add_task(chunk &&input) {
+future<upload_result> Engine::add_task(packed_storage &&input) {
     auto *info = new information_pass_to_curl_handle{
-            block(rough_size), promise<upload_result>{}, move(input)
+            dynamic_storage(rough_size), promise<upload_result>{}, move(input)
     };
     promise<upload_result> promise_to_result{};
     CURL *t_handle = curl_easy_init(); // this handle.
-    block download_result(rough_size);
+    dynamic_storage download_result(rough_size);
     curl_easy_setopt(t_handle, CURLOPT_WRITEDATA, &info->download_data);
     curl_easy_setopt(t_handle, CURLOPT_WRITEFUNCTION, &curl_write_cb);
     curl_easy_setopt(t_handle, CURLOPT_PRIVATE, info); // when transfer is finished, resolve the promise.

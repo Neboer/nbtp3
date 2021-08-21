@@ -10,15 +10,15 @@ using namespace nbtp;
 // send data blocks to network. running inside a thread.
 class Dispatcher {
   public:
-    using engine_func = function<future<upload_result>(chunk)>;
+    using engine_func = function<future<upload_result>(packed_storage)>;
     using callback_upload_func = function<void(upload_result)>;
-    TQueue<chunk>* data_queue;
+    TQueue<packed_storage>* data_queue;
     int upload_thread_count;
     queue<future<upload_result>> upload_queue{};
 
     engine_func network_uploader;
 
-    Dispatcher(TQueue<chunk>* dq, int utc, engine_func ef);
+    Dispatcher(TQueue<packed_storage>* dq, int utc, engine_func ef);
 
     upload_result operator()();
 

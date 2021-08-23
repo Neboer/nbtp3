@@ -20,7 +20,7 @@ upload_result Dispatcher::wait_and_return() {
 upload_result Dispatcher::operator()() {
     if (data_queue->no_more_input) {
         if (!upload_queue.empty())
-            wait_and_return();
+            return wait_and_return();
         else {
             throw execution_over_exception{};
         }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../TQueue/TQueue.h"
+#include "TQueue/TQueue.h"
 #include "nbtp.h"
 #include <functional>
 #include <future>

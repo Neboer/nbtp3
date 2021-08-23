@@ -5,16 +5,32 @@
 
 using namespace nbtp;
 
+enum last_chunk_status {
+    FULL,
+    HALF,
+    EMPTY
+};
+
+struct data_pass_to_cb;
+
 class Downloader {
 public:
     CURL* s_handle;
 
-    id id_counter;
+    static id get_next_id();
 
-    dynamic_storage operator ()();
+    packed_storage operator ()();
 
-    Downloader(const std::string &url);
+    explicit Downloader(const std::string &url);
+
+    void start_transfer();// should be run in another thread!
 
 private:
     TQueue<packed_storage> cache_chunks;
+
+    last_chunk_status last_status;
+
+    dynamic_storage* last_data;
+
+    last_chunk_status serialize_data(octet* data, size_t length);
 };

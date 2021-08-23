@@ -4,7 +4,7 @@
 
 using namespace nbtp;
 
-static size_t curl_write_cb(char *data, size_t count, size_t nmemb, void *user_data) {
+static size_t curl_write_cb(octet *data, size_t count, size_t nmemb, void *user_data) {
     auto *user_block = (dynamic_storage *) user_data;
     user_block->write_in(data, nmemb);
     return nmemb;

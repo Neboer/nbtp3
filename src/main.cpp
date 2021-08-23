@@ -1,8 +1,11 @@
 #include "nbtp.h"
 #include "Dispatcher.h"
+#include "downloader.h"
 #include "engine/engine.h"
 #include "lodepng/lodepng.h"
 
-int main() {
+using namespace nbtp;
 
+int main() {
+    curl_global_init(CURL_GLOBAL_ALL);
 }

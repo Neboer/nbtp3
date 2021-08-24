@@ -2,14 +2,14 @@
 
 void Dispatcher::add_task() {
     auto c = data_queue->get();
-    auto r = network_uploader(move(c));
+    auto r = network_uploader(std::move(c));
     upload_queue.push(move(r));
 }
 
 upload_result Dispatcher::wait_and_return() {
     auto &&t = upload_queue.front();
     t.wait();
-    auto m = move(t.get());
+    auto m = std::move(t.get());
     upload_queue.pop();
     return m;
 }
@@ -28,7 +28,7 @@ upload_result Dispatcher::operator()() {
         try {
             while (upload_queue.size() < upload_thread_count)
                 add_task();
-            auto m = move(wait_and_return());
+            auto m = std::move(wait_and_return());
             add_task();
             return m;
         } catch (execution_over_exception &e) {

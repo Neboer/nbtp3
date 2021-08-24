@@ -10,11 +10,11 @@ static size_t curl_write_cb(octet *data, size_t count, size_t nmemb, void *user_
     return nmemb;
 }
 
-future<upload_result> Engine::add_task(packed_storage &&input) {
+std::future<upload_result> Engine::add_task(packed_storage &&input) {
     auto *info = new information_pass_to_curl_handle{
-            dynamic_storage(rough_size), promise<upload_result>{}, move(input)
+            dynamic_storage(rough_size), std::promise<upload_result>{}, std::move(input)
     };
-    promise<upload_result> promise_to_result{};
+    std::promise<upload_result> promise_to_result{};
     CURL *t_handle = curl_easy_init(); // this handle.
     dynamic_storage download_result(rough_size);
     curl_easy_setopt(t_handle, CURLOPT_WRITEDATA, &info->download_data);
@@ -34,7 +34,7 @@ Engine::Engine() {
 void Engine::start_engine() {
     // run in a loop
     do {
-        this_thread::sleep_for(1s);
+        std::this_thread::sleep_for(std::chrono::seconds (1));
     } while (!startable);
     // ready for transmit.
     int running_handles, fds, queue_message_count;
@@ -45,12 +45,13 @@ void Engine::start_engine() {
         do {
             CURLMsg *msg = curl_multi_info_read(mt_handle, &queue_message_count);
             if (msg) { // if message is not empty then just keep reading.
+                clean_up(msg->easy_handle); // when receive a handle, a transfer is end, then clean up its resource.
                 information_pass_to_curl_handle *info;
                 curl_easy_getinfo(msg->easy_handle, CURLINFO_PRIVATE, &info);
                 if (msg->data.result == CURLE_OK) { // if the transfer is successful, extract the result and report
-                    info->promise_to_report_upload_result.set_value(
-                            result_converter(move(info->download_data))
-                    ); // upload_result isn't rely on download_data, so dd go die just be fine.
+                    info->promise_to_report_upload_result.set_value(upload_result{
+                            info->data_need_to_be_sent.cid, result_extractor(std::move(info->download_data)
+                    )}); // upload_result isn't rely on download_data, so dd go die just be fine.
                     // after the upload is complete, the data will be cleaned with the function.
                 } else { // a transfer is ERROR !
                     if (info->fail_times > max_failed_time_count) {
@@ -62,7 +63,6 @@ void Engine::start_engine() {
                         curl_multi_add_handle(mt_handle, msg->easy_handle); // push the transfer info multi interface again.
                     }
                 }
-
             }
         } while (queue_message_count > 0);
     }

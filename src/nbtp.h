@@ -3,9 +3,6 @@
 #include <array>
 #include <memory>
 
-
-using namespace std;
-
 using id = int;
 using octet = unsigned char;
 
@@ -21,9 +18,9 @@ namespace nbtp {
         id cid;
         size_t size;
         void* label;
-        unique_ptr<octet> data;
+        std::unique_ptr<octet> data;
 
-        packed_storage(id chunk_id, size_t chunk_size, unique_ptr<octet> &&input_data, void* tag=nullptr);
+        packed_storage(id chunk_id, size_t chunk_size, std::unique_ptr<octet> &&input_data, void* tag=nullptr);
 
         ~packed_storage() noexcept;
 
@@ -34,14 +31,14 @@ namespace nbtp {
 
     struct upload_result {
         id cid = -1;
-        string link; // link to get the uploaded image.
+        std::string link; // link to get the uploaded image.
     };
 }
 
 struct dynamic_storage { // block is dynamic. But chunk is static.
     size_t current_size;
     size_t max_size;
-    unique_ptr<octet> p;
+    std::unique_ptr<octet> p;
 
     explicit dynamic_storage(size_t init_size);
 

@@ -5,7 +5,7 @@ using namespace nbtp;
 // chunk is static. After it is create, it can only be moved and its length is fixed.
 // what's more, chunk need to hold the only copy of the data(unique ptr),
 
-packed_storage::packed_storage(id chunk_id, size_t chunk_size, unique_ptr<octet> &&input_data, void *tag)
+packed_storage::packed_storage(id chunk_id, size_t chunk_size, std::unique_ptr<octet> &&input_data, void *tag)
         : data(move(input_data)), cid(chunk_id), size(chunk_size), label(tag) {}
 
 packed_storage::~packed_storage() noexcept {
@@ -44,7 +44,7 @@ dynamic_storage::~dynamic_storage() { p = nullptr; }
 // After this operation, the original dynamic storage is invalid. Do not use it.
 nbtp::packed_storage dynamic_storage::seal(id cid, void *tag) {
     return packed_storage{
-            cid, current_size, unique_ptr<octet>(p.release()), tag
+            cid, current_size, std::unique_ptr<octet>(p.release()), tag
     };
 }
 

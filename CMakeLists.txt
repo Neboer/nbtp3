@@ -2,12 +2,19 @@ cmake_minimum_required(VERSION 3.19)
 project(nbtp3)
 
 set(GOOGLETEST_VERSION 1.11.0)
-add_subdirectory(Google_tests)
-set(CMAKE_CXX_STANDARD 20)
-set(CURLPP_BUILD_SHARED_LIBS ON)
-#include_directories(${CURLPP_INCLUDE_DIR})
-#include_directories(${CURL_INCLUDE_DIR})
-add_executable(nbtp3 src/main.cpp src/Dispatcher.cpp src/TQueue/TQueue.cpp src/engine/engine.cpp src/nbtp.cpp src/reporter.cpp src/downloader.cpp src/converter.cpp)
 find_library(CURL_LIBRARY curl)
-message(${CURL_LIBRARY})
+set(source_code_list
+        src/TQueue/TQueue.cpp
+        src/converter.cpp
+        src/Dispatcher.cpp
+        src/downloader.cpp
+        src/nbtp.cpp
+        src/reporter.cpp
+        src/engine/engine.cpp
+        src/engine/localEngine.cpp
+        src/lodepng/lodepng.cpp
+        )
+#add_subdirectory(Google_tests)
+set(CMAKE_CXX_STANDARD 20)
+add_executable(nbtp3 ${source_code_list} src/main.cpp)
 target_link_libraries(nbtp3 ${CURL_LIBRARY})

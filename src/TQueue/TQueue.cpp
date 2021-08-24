@@ -1,13 +1,13 @@
 #include "TQueue.h"
 
-using clg = const lock_guard<mutex>;
+using clg = const std::lock_guard<std::mutex>;
 
 template<typename T>
 TQueue<T>::TQueue(size_t s) {
     max_size = s;
     no_more_input = false;
     unfinished_tasks = 0;
-    lock = unique_lock<mutex>(mt);
+    lock = std::unique_lock<std::mutex>(mt);
     mt.unlock();
 }
 
@@ -18,7 +18,7 @@ void TQueue<T>::task_done() {
     auto unfinished = unfinished_tasks - 1;
     if (unfinished <= 0) {
         if (unfinished < 0) {
-            throw runtime_error("too many task_done called.");
+            throw std::runtime_error("too many task_done called.");
         }
         all_task_done.notify_all();
     }
@@ -47,11 +47,11 @@ void TQueue<T>::put(T item) noexcept {
 template<typename T>
 T TQueue<T>::get() {
     clg guard(mt);
-    if (queue_.size() == 0 && no_more_input) throw execution_over_exception{};
+    if (queue_.empty() && no_more_input) throw execution_over_exception{};
     not_empty.wait(lock, [this]() {
         return queue_.size();
     });
-    T item = move(queue_.front());
+    T item = std::move(queue_.front());
     queue_.pop();
     not_full.notify_one();
     return item;

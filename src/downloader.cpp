@@ -29,7 +29,7 @@ last_chunk_status Downloader::serialize_data(octet *data, size_t length) {
 }
 
 struct data_pass_to_cb {
-    function<last_chunk_status(octet *, size_t)> serialize_data_func;
+    std::function<last_chunk_status(octet *, size_t)> serialize_data_func;
     last_chunk_status *last_status_report;
 };
 
@@ -44,7 +44,7 @@ Downloader::Downloader(const std::string &url) : cache_chunks(5), last_status(EM
                                                  last_data(new dynamic_storage(default_chunk_size)) {
     s_handle = curl_easy_init();
     auto communication_data = new data_pass_to_cb{
-            std::bind(&Downloader::serialize_data, this, placeholders::_1, placeholders::_2),
+            std::bind(&Downloader::serialize_data, this, std::placeholders::_1, std::placeholders::_2),
             &last_status};
     curl_easy_setopt(s_handle, CURLOPT_URL, url.c_str());
     curl_easy_setopt(s_handle, CURLOPT_WRITEFUNCTION, &curl_write_cb);

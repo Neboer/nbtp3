@@ -7,9 +7,7 @@
 #include <stdexcept>
 // a queue for threads sharing data.
 
-using namespace std;
-
-class execution_over_exception : exception {};
+class execution_over_exception : std::exception {};
 
 template<typename T>
 class TQueue {
@@ -31,12 +29,12 @@ public:
     T get();
 
 private:
-    queue<T> queue_;
-    mutex mt;
-    unique_lock<mutex> lock;
-    condition_variable not_empty;
-    condition_variable not_full;
-    condition_variable all_task_done;
+    std::queue<T> queue_;
+    std::mutex mt;
+    std::unique_lock<std::mutex> lock;
+    std::condition_variable not_empty;
+    std::condition_variable not_full;
+    std::condition_variable all_task_done;
     size_t unfinished_tasks;
 };
 

@@ -9,11 +9,11 @@ using namespace nbtp;
 
 
 
-class MaxTryExceedException : exception {};
+class MaxTryExceedException : std::exception {};
 
 struct information_pass_to_curl_handle {
     dynamic_storage download_data;
-    promise<upload_result> promise_to_report_upload_result{};
+    std::promise<upload_result> promise_to_report_upload_result{};
     packed_storage data_need_to_be_sent;
     short fail_times = 0;
 };
@@ -29,12 +29,14 @@ public:
 
     static size_t rough_size;
 
-    future<upload_result> add_task(packed_storage &&input);
+    std::future<upload_result> add_task(packed_storage &&input);
 
     void start_engine();
 
 private:
-    virtual upload_result result_converter(dynamic_storage raw_result) = 0; // convert the server response to a result
+    virtual std::string result_extractor(dynamic_storage raw_result) = 0; // convert the server response to a result
 
     virtual void define_curl(CURL *in_curl, packed_storage *input) = 0; // set url and data for input CURL. Dont care about input object.
+
+    virtual void clean_up(CURL* curl_handle) = 0; // thanks to libcurl, we need to clean up the form data after upload.
 };

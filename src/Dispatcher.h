@@ -1,6 +1,6 @@
 #pragma once
 
-#include "TQueue/TQueue.h"
+#include "TQueue/TQueue.hpp"
 #include "nbtp.h"
 #include <functional>
 #include <future>
@@ -18,7 +18,7 @@ public:
 
     engine_func network_uploader;
 
-    Dispatcher(TQueue<packed_storage> *dq, int utc, engine_func ef);
+    Dispatcher(TQueue<packed_storage> *dq, int upload_limit, engine_func ef);
 
     upload_result operator()();
 

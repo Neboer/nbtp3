@@ -37,4 +37,3 @@ private:
     std::condition_variable all_task_done;
     size_t unfinished_tasks;
 };
-

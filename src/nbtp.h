@@ -3,7 +3,7 @@
 #include <array>
 #include <memory>
 
-using id = int;
+using chunk_id = int;
 using octet = unsigned char;
 
 constexpr size_t default_chunk_size = 4 * 1024 * 1024; // 4MB
@@ -15,12 +15,12 @@ namespace nbtp {
     constexpr int max_failed_time_count = 3;
 
     struct packed_storage {
-        id cid;
+        chunk_id cid;
         size_t size;
         void* label;
         std::unique_ptr<octet> data;
 
-        packed_storage(id chunk_id, size_t chunk_size, std::unique_ptr<octet> &&input_data, void* tag=nullptr);
+        packed_storage(chunk_id chunk_id, size_t chunk_size, std::unique_ptr<octet> &&input_data, void* tag=nullptr);
 
         ~packed_storage() noexcept;
 
@@ -30,7 +30,7 @@ namespace nbtp {
     };
 
     struct upload_result {
-        id cid = -1;
+        chunk_id cid = -1;
         std::string link; // link to get the uploaded image.
     };
 }
@@ -46,7 +46,7 @@ struct dynamic_storage { // block is dynamic. But chunk is static.
 
     void write_in(octet c, size_t write_times);
 
-    nbtp::packed_storage seal(id cid, void* tag = nullptr); // make current dynamic storage static and seal it permanently
+    nbtp::packed_storage seal(chunk_id cid, void* tag = nullptr); // make current dynamic storage static and seal it permanently
 
     ~dynamic_storage();
 

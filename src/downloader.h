@@ -1,7 +1,7 @@
 // downloader download a file from another location with single thread.
 #include "nbtp.h"
 #include <curl/curl.h>
-#include "TQueue/TQueue.h"
+#include "TQueue/TQueue.hpp"
 
 using namespace nbtp;
 
@@ -17,7 +17,7 @@ class Downloader {
 public:
     CURL* s_handle;
 
-    static id get_next_id();
+    static chunk_id get_next_id();
 
     packed_storage operator ()();
 

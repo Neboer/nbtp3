@@ -3,7 +3,9 @@
 #include "engine.h"
 #include <map>
 
-class localEngine : Engine {
+class localEngine : public Engine {
+public:
+    const static size_t rough_size = 1024;
 private:
     std::map<CURL *, curl_mime *> curl_cache{};
 

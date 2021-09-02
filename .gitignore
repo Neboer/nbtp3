@@ -1,2 +1,4 @@
 /playground/
 test/test_picture_bed/picture
+.*
+temp

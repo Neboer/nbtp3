@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../nbtp.h"
+#include "nbtp.h"
 #include <curl/curl.h>
 #include <future>
 #include <stdexcept>
@@ -27,7 +27,7 @@ public:
 
     Engine();
 
-    static size_t rough_size;
+    const static size_t rough_size = 1024;
 
     std::future<upload_result> add_task(packed_storage &&input);
 

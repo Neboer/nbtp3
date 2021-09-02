@@ -1,6 +1,5 @@
 #include "engine.h"
 #include <cstddef>
-#include <memory>
 
 using namespace nbtp;
 
@@ -32,7 +31,6 @@ Engine::Engine() {
 }
 
 void Engine::start_engine() {
-    // run in a loop
     do {
         std::this_thread::sleep_for(std::chrono::seconds (1));
     } while (!startable);
@@ -54,6 +52,7 @@ void Engine::start_engine() {
                     )}); // upload_result isn't rely on download_data, so dd go die just be fine.
                     // after the upload is complete, the data will be cleaned with the function.
                 } else { // a transfer is ERROR !
+//                    Reporter::report_error(info->data_need_to_be_sent.cid, curl_easy_strerror(msg->data.result));
                     if (info->fail_times > max_failed_time_count) {
                         throw MaxTryExceedException{};
                     } else {

@@ -4,8 +4,8 @@
 // the callback function
 
 // init buffer muxt size at default_chunk_size
-id Downloader::get_next_id() {
-    static id i = 0;
+chunk_id Downloader::get_next_id() {
+    static chunk_id i = 0;
     return i++;
 }
 
@@ -47,6 +47,7 @@ Downloader::Downloader(const std::string &url) : cache_chunks(5), last_status(EM
             std::bind(&Downloader::serialize_data, this, std::placeholders::_1, std::placeholders::_2),
             &last_status};
     curl_easy_setopt(s_handle, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(s_handle, CURLOPT_FOLLOWLOCATION, 1);
     curl_easy_setopt(s_handle, CURLOPT_WRITEFUNCTION, &curl_write_cb);
     curl_easy_setopt(s_handle, CURLOPT_WRITEDATA, communication_data);
 }
